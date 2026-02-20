@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  # ── Backend API ──────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edgestone_backend
+    restart: unless-stopped
+    env_file:
+      - .env.production       # Created by deploy.sh on the server — never commit this
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+    expose:
+      - "5000"                # Internal only — Nginx is the only public entry point
+    networks:
+      - edgestone_net
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+  # ── Nginx — SSL termination + reverse proxy ──────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: edgestone_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - edgestone_net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  edgestone_net:
+    driver: bridge
