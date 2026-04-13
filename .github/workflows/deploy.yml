@@ -1,51 +1,35 @@
-name: 🚀 Deploy to Hostinger VPS
+name: Deploy to Production VPS
 
 on:
-    push:
-        branches:
-            - main # Auto-deploy on every push to main
-    workflow_dispatch: # Also allow manual trigger from GitHub UI
+  push:
+    branches:
+      - main
 
 jobs:
-    deploy:
-        name: Deploy to Hostinger
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
+  deploy:
+    name: SSH Deploy to VPS
+    runs-on: ubuntu-latest
 
-        steps:
-            # ── 1. Checkout (just to verify the build passes) ───────────────────────
-            - name: Checkout code
-              uses: actions/checkout@v4
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
 
-            # ── 2. SSH into VPS and redeploy ────────────────────────────────────────
-            - name: Deploy via SSH
-              uses: appleboy/ssh-action@v1.2.0
-              with:
-                  host: ${{ secrets.HOSTINGER_VPS_IP }}
-                  username: ${{ secrets.HOSTINGER_SSH_USER }}
-                  key: ${{ secrets.HOSTINGER_SSH_KEY }}
-                  port: 22
-                  script_stop: true # Stop on first error
-                  script: |
-                      set -e
-                      echo "📦 Pulling latest code..."
-                      cd /opt/edgestone
-                      git pull origin main
+            cd /srv/apps/edgestone/EdgeStone_Backend_VPS
 
-                      echo "🔄 Running update deploy..."
-                      chmod +x deploy.sh
-                      ./deploy.sh --update
+            echo "⬇️ Pulling latest changes..."
+            git pull origin main
 
-                      echo "✅ Deploy completed at $(date)"
+            echo "🛑 Stopping existing containers..."
+            docker compose down
 
-            # ── 3. Post-deploy health check ─────────────────────────────────────────
-            - name: Health check
-              run: |
-                  sleep 10
-                  STATUS=$(curl -sk -o /dev/null -w "%{http_code}" https://desinomads.com/ || echo "000")
-                  echo "Health check status: $STATUS"
-                  if [ "$STATUS" != "200" ]; then
-                    echo "⚠️ Health check returned $STATUS — backend may still be starting."
-                    exit 1
-                  fi
-                  echo "✅ API is live at https://desinomads.com/"
+            echo "🔨 Rebuilding and starting containers..."
+            docker compose up -d --build
+
+            echo "✅ Deployment complete."
+            docker compose ps

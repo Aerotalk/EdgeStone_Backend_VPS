@@ -64,7 +64,7 @@ const withRetry = async (fn, { retries = 2, delayMs = 1500, label = 'operation' 
 
 // ─────────────────────────────────────────────────────────────────────────────
 // sendEmail — primary public API
-// Validates inputs, guards against missing client, retries on transient failures.
+// Validates inputs, guards against missing client, retries on transient failures. 
 // ─────────────────────────────────────────────────────────────────────────────
 const sendEmail = async ({ to, subject, html, text, inReplyTo, references }) => {
     // ── Input validation ──────────────────────────────────────────────────────

@@ -1,0 +1,66 @@
+﻿
+> backend@1.0.0 test:e2e
+> jest e2e_tests/ --verbose --forceExit
+
+  console.log
+    [dotenv@17.2.3] injecting env (20) from .env -- tip: ≡ƒôí add observability to secrets: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    [dotenv@17.2.3] injecting env (20) from .env -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    [dotenv@17.2.3] injecting env (20) from .env -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    Skipping Create Ticket API test: Controller is stubbed.
+
+      at Object.log (e2e_tests/suites/ticket_flow.test.js:57:17)
+
+  console.log
+    Email sent: E2E Auto Ticket 10ypk9ox
+
+      at Object.log (e2e_tests/suites/email_flow.test.js:41:21)
+
+node.exe : PASS e2e_tests/suites/ticket_flow.test.js (6.682 s)
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (PASS e2e_tests/. 
+   ..st.js (6.682 s):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  E2E: Ticket Flow
+    ΓêÜ Create Ticket via API (5 ms)
+    ΓêÜ Reply to Ticket (if exists) (4283 ms)
+
+PASS e2e_tests/suites/crud.test.js (9.563 s)
+  E2E: Admin CRUD Operations
+    ΓêÜ Create and Fetch Agent (2273 ms)
+    ΓêÜ Create and Update Client (2401 ms)
+    ΓêÜ Create and Update Vendor (2485 ms)
+
+  console.log
+    Ticket Verified: #1038
+
+      at Object.log (e2e_tests/suites/email_flow.test.js:78:17)
+
+PASS e2e_tests/suites/email_flow.test.js (23.697 s)
+  E2E: Email Flow (SMTP/IMAP)
+    ΓêÜ Send Email -> Ticket Creation (21299 ms)
+
+Test Suites: 3 passed, 3 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        24.19 s
+Ran all test suites matching e2e_tests/.
+Force exiting Jest: Have you considered using 
+`--detectOpenHandles` to detect async operations that kept 
+running after all tests finished?
